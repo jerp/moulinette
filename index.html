@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Moulinette" />
+    <meta name="keywords" content="transformation" />
+    <meta name="author" content="Jerome Proost" />
+  </head>
+  <title>Moulinette</title>
+  <style>
+    body {
+      padding-top: 170px;
+      margin: 0px;
+    }
+    .container {
+      margin-top: 5px;
+      margin-left: 15px;
+    }
+    #header {
+      width: 100%;
+      position: fixed;
+      background: #333;
+      padding: 5px;
+      color: #fff;
+      top: 0;
+      height: 165px;
+    }
+    #controls {
+      display: inline-block;
+    }
+    .container > p {
+      margin: 0px;
+    }
+    .container > p span {
+      margin-right: 3px;
+      color: #333;
+    }
+    .container > p span.dateDePaie {
+      color: #e83e8c;
+    }
+    .container > p span.noZadig,
+    .container > p span.referenceComptable1,
+    .container > p span.referenceComptable1 {
+      color: #6f42c1;
+    }
+    .container > p .alert {
+      color: #d80e4c;
+    }
+    #downloadcontainer > a {
+      color: #fff;
+      padding: 10px 0px;
+      display: inline-block;
+    }
+  </style>
+  <body>
+    <div id="header">
+      <h1>Moulinette</h1>
+      <div style="width: 100%; margin-bottom: 10px">
+        <label class="label">Fichier à mouliner:</label>
+        <input type="file" id="input" style="width: 70%" />
+      </div>
+      <div id="controls">
+        <label class="label">
+          <input
+            type="checkbox"
+            id="codeImputation"
+            name="codeImputation"
+            checked
+          />
+          Modifier code imputation
+        </label>
+        <label class="label">
+          <input
+            type="checkbox"
+            id="codeEnregistrement"
+            name="codeEnregistrement"
+            checked
+          />
+          Supprimer code enregistrement 'V'
+        </label>
+        <label class="label">
+          <input type="checkbox" id="codePac" name="codePac" /> Modifier code
+          pac
+        </label>
+      </div>
+      <div id="downloadcontainer"></div>
+    </div>
+    <pre id="content" class="container"></pre>
+    <script>
+      (function () {
+        function modifierCodeImputation(lines) {
+          lines.forEach(
+            (l) =>
+              l.codeFichier === "CA" &&
+              (l.referenceComptable1 = "JE") &&
+              (l.referenceComptable2 = "")
+          );
+          return lines;
+        }
+        function modifierCodePac(lines) {
+          lines.forEach(
+            (l) =>
+              l.codeFichier === "CA" &&
+              (l.noZadig = l.noZadig === "900173" ? "951421" : "900173")
+          );
+          return lines;
+        }
+        function suprimerCodeEnregistrementV(lines) {
+          return lines.filter((l) => l.codeEnregistrement !== "V");
+        }
+        class GLLine {
+          constructor(i) {
+            this._ = i ? i : " ".repeat(200);
+          }
+          _get(b, e) {
+            return this._.slice(b - 1, e);
+          }
+          _set(i, b, e) {
+            this._ =
+              this._.slice(0, b - 1) +
+              ((i || "") + " ".repeat(20)).slice(0, e - b + 1) +
+              this._.slice(e);
+          }
+          static _headers = [
+            "codeFichier",
+            "noDeTraitement",
+            "codeMonnaie",
+            "codeSystemPaie",
+            "dateDePaie",
+            "codeJournal",
+            "constante",
+            "codeEnregistrement",
+            "jour",
+            "noDeCompte",
+            "imputation",
+            "montantDebit",
+            "montantCredit",
+            "libelleCompte",
+            "noDeMatricule",
+            "noDeRubrique",
+            "referenceComptable1",
+            "referenceComptable3",
+            "referenceComptable2",
+            "noDeDTR",
+            "noZadig",
+            "blanc1",
+            "siecle",
+            "blanc2",
+          ];
+
+          toString() {
+            return this._;
+          }
+          get codeFichier() {
+            return this._get(1, 2);
+          }
+          set codeFichier(i) {
+            this._set(i, 1, 2);
+          }
+          get noDeTraitement() {
+            return this._get(2, 8);
+          }
+          set noDeTraitement(i) {
+            this._set(i, 2, 8);
+          }
+          get codeMonnaie() {
+            return this._get(9, 9);
+          }
+          set codeMonnaie(i) {
+            this._set(i, 9, 9);
+          }
+          get codeSystemPaie() {
+            return this._get(10, 12);
+          }
+          set codeSystemPaie(i) {
+            this._set(i, 10, 12);
+          }
+          get dateDePaie() {
+            return this._get(13, 16);
+          }
+          set dateDePaie(i) {
+            this._set(i, 13, 16);
+          }
+          get codeJournal() {
+            return this._get(17, 19);
+          }
+          set codeJournal(i) {
+            this._set(i, 17, 19);
+          }
+          get constante() {
+            return this._get(20, 21);
+          }
+          set constante(i) {
+            this._set(i, 20, 21);
+          }
+          get codeEnregistrement() {
+            return this._get(22, 22);
+          }
+          set codeEnregistrement(i) {
+            this._set(i, 22, 22);
+          }
+          get jour() {
+            return this._get(23, 24);
+          }
+          set jour(i) {
+            this._set(i, 23, 24);
+          }
+          get noDeCompte() {
+            return this._get(25, 36);
+          }
+          set noDeCompte(i) {
+            this._set(i, 25, 36);
+          }
+          get imputation() {
+            return this._get(37, 5);
+          }
+          set imputation(i) {
+            this._set(i, 37, 54);
+          }
+          get montantDebit() {
+            return this._get(55, 67);
+          }
+          set montantDebit(i) {
+            this._set(i, 55, 67);
+          }
+          get montantCredit() {
+            return this._get(68, 80);
+          }
+          set montantCredit(i) {
+            this._set(i, 68, 80);
+          }
+          get libelleCompte() {
+            return this._get(81, 100);
+          }
+          set libelleCompte(i) {
+            this._set(i, 81, 100);
+          }
+          get noDeMatricule() {
+            return this._get(101, 108);
+          }
+          set noDeMatricule(i) {
+            this._set(i, 101, 108);
+          }
+          get noDeRubrique() {
+            return this._get(109, 116);
+          }
+          set noDeRubrique(i) {
+            this._set(i, 109, 116);
+          }
+          get referenceComptable1() {
+            return this._get(117, 128);
+          }
+          set referenceComptable1(i) {
+            this._set(i, 117, 128);
+          }
+          get referenceComptable3() {
+            return this._get(129, 140);
+          }
+          set referenceComptable3(i) {
+            this._set(i, 129, 140);
+          }
+          get referenceComptable2() {
+            return this._get(141, 146);
+          }
+          set referenceComptable2(i) {
+            this._set(i, 141, 146);
+          }
+          get noDeDTR() {
+            return this._get(147, 150);
+          }
+          set noDeDTR(i) {
+            this._set(i, 147, 150);
+          }
+          get noZadig() {
+            return this._get(151, 156);
+          }
+          set noZadig(i) {
+            this._set(i, 151, 156);
+          }
+          get blanc1() {
+            return this._get(157, 158);
+          }
+          set blanc1(i) {
+            this._set(i, 157, 158);
+          }
+          get siecle() {
+            return this._get(159, 160);
+          }
+          set siecle(i) {
+            this._set(i, 159, 160);
+          }
+          get blanc2() {
+            return this._get(161, 200);
+          }
+          set blanc2(i) {
+            this._set(i, 161, 200);
+          }
+        }
+        const inputElement = document.getElementById("input");
+        inputElement.addEventListener("change", handleFiles, false);
+        const codeImputation = document.getElementById("codeImputation");
+        codeImputation.addEventListener("change", handleFiles, false);
+        const codeEnregistrement =
+          document.getElementById("codeEnregistrement");
+        codeEnregistrement.addEventListener("change", handleFiles, false);
+        const codePac = document.getElementById("codePac");
+        codePac.addEventListener("change", handleFiles, false);
+        function errorMessage(message) {
+          const content = document.getElementById("content");
+          content.innerHTML = `<p class="alert">${message}</p>`;
+        }
+        function handleFiles() {
+          initContent();
+          const fileList =
+            inputElement.files; /* now you can work with the file list */
+          fileList[0] &&
+            fileList[0]
+              .text()
+              .then((text) => {
+                let lines = readLines(text);
+                if (lines) {
+                  if (codeImputation.checked)
+                    lines = modifierCodeImputation(lines);
+                  if (codePac.checked) lines = modifierCodePac(lines);
+                  if (codeEnregistrement.checked)
+                    lines = suprimerCodeEnregistrementV(lines);
+                  toContent(lines);
+                  downloadText(
+                    lines.join("\n"),
+                    lines[0] ? lines[0].dateDePaie : ""
+                  );
+                } else {
+                  errorMessage(
+                    "ce fichier ne peut être traiter (code fichier doit être CA - 2 premiers caractères)"
+                  );
+                }
+              })
+              .catch((e) =>
+                errorMessage(
+                  e && e.message
+                    ? e.message.slice(0, 100)
+                    : "erreur lors de la lecture du fichier"
+                )
+              );
+        }
+        function readLines(text) {
+          if (text.slice(0, 2) !== "CA") return false;
+          return text.split(/\r?\n/).map((l) => new GLLine(l));
+        }
+        function initContent() {
+          const content = document.getElementById("content");
+          content.innerHTML = "";
+          const downloadlink = document.getElementById("downloadlink");
+          downloadlink && downloadlink.parentNode.removeChild(downloadlink);
+        }
+        function toContent(glLines) {
+          const headers = GLLine._headers;
+          glLines.slice(0, 10000).forEach((glLine) => {
+            const p = document.createElement("p");
+            headers.forEach((h) => {
+              const span = document.createElement("span");
+              span.innerHTML = glLine[h];
+              span.className = h;
+              span.title = h
+                .replace(
+                  /[A-Z0-9]+/g,
+                  (t) =>
+                    ` ${
+                      /^[A-Z0-9]+$/.test(t) ? t.toLowerCase() : t.toLowerCase()
+                    }`
+                )
+                .trim();
+              p.appendChild(span);
+            });
+            content.appendChild(p);
+          });
+        }
+        function downloadText(text, suffix) {
+          const name = `CPT195_${suffix}.txt`;
+          const blob = new Blob([text]);
+          const blobUrl = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = blobUrl;
+          link.id = "downloadlink";
+          link.download = name;
+          link.innerHTML = `télécharger ${name}`;
+          const downloadcontainer =
+            document.getElementById("downloadcontainer");
+          downloadcontainer.appendChild(link);
+        }
+      })();
+    </script>
+  </body>
+</html>
