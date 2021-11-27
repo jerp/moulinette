@@ -8,6 +8,6 @@ Moulinette pour GL Files
 4. télécharger le fichier transformé
 
 Le traitement est effectué localement. Il n'y a pas de traitement ou échange avec un serveur.
-Tout est contenu dans une seule page HTML qui peut être installé localement [voir page html](https://raw.githubusercontent.com/jerp/moulinette/main/index.html)
+Tout est contenu dans une seule page HTML qui peut être installé localement ([voir source de la page html](https://raw.githubusercontent.com/jerp/moulinette/main/index.html))
 
 [LICENSE](https://github.com/jerp/moulinette/blob/main/LICENSE)
