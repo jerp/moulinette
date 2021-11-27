@@ -2,8 +2,7 @@
 Moulinette pour GL Files
 
 
-
-1. Aller sur [Moulinette](https://jerp.github.io/moulinette/)
+1. Aller sur <a href="https://jerp.github.io/moulinette/" target="_blank">la Moulinette</a>
 2. charger le fichier à mouliner
 3. valider les options et le résultat
 4. télécharger le fichier transformé
