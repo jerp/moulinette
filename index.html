@@ -329,9 +329,9 @@
         const codePac = document.getElementById("codePac");
         codePac.addEventListener("change", handleFiles, false);
         const characteresSpeciaux = document.getElementById("characteresSpeciaux");
-        codePac.addEventListener("change", handleFiles, false);
+        characteresSpeciaux.addEventListener("change", handleFiles, false);
         const codeJournal = document.getElementById("codeJournal");
-        codePac.addEventListener("change", handleFiles, false);
+        codeJournal.addEventListener("change", handleFiles, false);
         function errorMessage(message) {
           const content = document.getElementById("content");
           content.innerHTML = `<p class="alert">${message}</p>`;
@@ -446,7 +446,7 @@
           ></path>
         </svg>
       </a>
-      <small style="color: lightgrey">02/12/21</small>
+      <small style="color: #767676;">44</small>
     </div>
   </body>
 </html>
