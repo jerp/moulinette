@@ -89,8 +89,13 @@
           Supprimer code enregistrement 'V'
         </label>
         <label class="label">
-          <input type="checkbox" id="codePac" name="codePac" /> Modifier code
-          pac
+          <input type="checkbox" id="codePac" name="codePac" checked/> Modifier code pac
+        </label>
+        <label class="label">
+          <input type="checkbox" id="characteresSpeciaux" name="characteresSpeciaux" checked/> remplacer characteres speciaux
+        </label>
+        <label class="label">
+          <input type="checkbox" id="codeJournal" name="codeJournal" checked/> forcer code journal
         </label>
       </div>
       <div id="downloadcontainer"></div>
@@ -108,15 +113,18 @@
           return lines;
         }
         function modifierCodePac(lines) {
-          lines.forEach(
-            (l) =>
-              l.codeFichier === "CA" &&
-              (l.noZadig = l.noZadig === "900173" ? "951421" : "900173")
-          );
-          return lines;
+          lines.forEach(l => l._.replace(/[^\x20-\xff]/g, ' '))
+          return lines
         }
         function suprimerCodeEnregistrementV(lines) {
           return lines.filter((l) => l.codeEnregistrement !== "V");
+        }
+        function remplacerCharacteresSpeciaux(lines) {
+          return lines.filter((l) => l.codeEnregistrement !== "V");
+        }
+        function forcerCodeJournal(lines) {
+          lines.forEach(l => l.codeFichier === "CA" && (l.codeJournal = 'SAL'));
+          return lines;
         }
         class GLLine {
           constructor(i) {
@@ -315,6 +323,10 @@
         codeEnregistrement.addEventListener("change", handleFiles, false);
         const codePac = document.getElementById("codePac");
         codePac.addEventListener("change", handleFiles, false);
+        const characteresSpeciaux = document.getElementById("characteresSpeciaux");
+        codePac.addEventListener("change", handleFiles, false);
+        const codeJournal = document.getElementById("codeJournal");
+        codePac.addEventListener("change", handleFiles, false);
         function errorMessage(message) {
           const content = document.getElementById("content");
           content.innerHTML = `<p class="alert">${message}</p>`;
@@ -334,6 +346,10 @@
                   if (codePac.checked) lines = modifierCodePac(lines);
                   if (codeEnregistrement.checked)
                     lines = suprimerCodeEnregistrementV(lines);
+                  if (characteresSpeciaux.checked)
+                    lines = remplacerCharacteresSpeciaux(lines);
+                  if (codeJournal.checked)
+                    lines = forcerCodeJournal(lines);
                   toContent(lines);
                   downloadText(
                     lines.join("\n"),
@@ -425,6 +441,7 @@
           ></path>
         </svg>
       </a>
+      <p>02/12/21</p>
     </div>
   </body>
 </html>
