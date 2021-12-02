@@ -113,14 +113,19 @@
           return lines;
         }
         function modifierCodePac(lines) {
-          lines.forEach(l => l._.replace(/[^\x20-\xff]/g, ' '))
-          return lines
+          lines.forEach(
+            (l) =>
+              l.codeFichier === "CA" &&
+              (l.noZadig = l.noZadig === "900173" ? "951421" : "900173")
+          );
+          return lines;
         }
         function suprimerCodeEnregistrementV(lines) {
           return lines.filter((l) => l.codeEnregistrement !== "V");
         }
         function remplacerCharacteresSpeciaux(lines) {
-          return lines.filter((l) => l.codeEnregistrement !== "V");
+          lines.forEach(l => (l._ = l._.replace(/[^\x20-\xff]/g, ' ')))
+          return lines
         }
         function forcerCodeJournal(lines) {
           lines.forEach(l => l.codeFichier === "CA" && (l.codeJournal = 'SAL'));
