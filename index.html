@@ -9,7 +9,8 @@
   <title>Moulinette</title>
   <style>
     body {
-      padding-top: 170px;
+      padding-top: 180px;
+      padding-bottom: 30px;
       margin: 0px;
     }
     .container {
@@ -25,11 +26,26 @@
       top: 0;
       height: 165px;
     }
+    .footer {
+      width: 100%;
+      position: fixed;
+      background: #333;
+      padding: 5px;
+      color: #fff;
+      bottom: 0;
+      height: 20px;
+      margin: 0px;
+    }
     #controls {
       display: inline-block;
     }
+    .footer > p,
     .container > p {
       margin: 0px;
+    }
+    .footer > p span {
+      margin-right: 3px;
+      color: #fff;
     }
     .container > p span {
       margin-right: 3px;
@@ -89,18 +105,29 @@
           Supprimer code enregistrement 'V'
         </label>
         <label class="label">
-          <input type="checkbox" id="codePac" name="codePac" checked/> Modifier code pac
+          <input type="checkbox" id="codePac" name="codePac" checked /> Modifier
+          code pac
         </label>
         <label class="label">
-          <input type="checkbox" id="characteresSpeciaux" name="characteresSpeciaux" checked/> remplacer characteres speciaux
+          <input
+            type="checkbox"
+            id="characteresSpeciaux"
+            name="characteresSpeciaux"
+            checked
+          />
+          remplacer characteres speciaux
         </label>
         <label class="label">
-          <input type="checkbox" id="codeJournal" name="codeJournal" checked/> forcer code journal
+          <input type="checkbox" id="codeJournal" name="codeJournal" checked />
+          forcer code journal
         </label>
       </div>
       <div id="downloadcontainer"></div>
     </div>
     <pre id="content" class="container"></pre>
+    <pre
+      class="footer"
+    ><p>Crédit <span id="montantDebit" title="total debit"></span> Débit <span id="montantCredit" title="total credit"></span></p></pre>
     <script>
       (function () {
         function modifierCodeImputation(lines) {
@@ -124,11 +151,13 @@
           return lines.filter((l) => l.codeEnregistrement !== "V");
         }
         function remplacerCharacteresSpeciaux(lines) {
-          lines.forEach(l => (l._ = l._.replace(/[^\x20-\xff]/g, ' ')))
-          return lines
+          lines.forEach((l) => (l._ = l._.replace(/[^\x20-\xff]/g, " ")));
+          return lines;
         }
         function forcerCodeJournal(lines) {
-          lines.forEach(l => l.codeFichier === "CA" && (l.codeJournal = 'SAL'));
+          lines.forEach(
+            (l) => l.codeFichier === "CA" && (l.codeJournal = "SAL")
+          );
           return lines;
         }
         class GLLine {
@@ -328,7 +357,9 @@
         codeEnregistrement.addEventListener("change", handleFiles, false);
         const codePac = document.getElementById("codePac");
         codePac.addEventListener("change", handleFiles, false);
-        const characteresSpeciaux = document.getElementById("characteresSpeciaux");
+        const characteresSpeciaux = document.getElementById(
+          "characteresSpeciaux"
+        );
         characteresSpeciaux.addEventListener("change", handleFiles, false);
         const codeJournal = document.getElementById("codeJournal");
         codeJournal.addEventListener("change", handleFiles, false);
@@ -353,9 +384,9 @@
                     lines = suprimerCodeEnregistrementV(lines);
                   if (characteresSpeciaux.checked)
                     lines = remplacerCharacteresSpeciaux(lines);
-                  if (codeJournal.checked)
-                    lines = forcerCodeJournal(lines);
+                  if (codeJournal.checked) lines = forcerCodeJournal(lines);
                   toContent(lines);
+                  totals(lines);
                   downloadText(
                     lines.join("\n"),
                     lines[0] ? lines[0].dateDePaie : ""
@@ -419,6 +450,50 @@
             document.getElementById("downloadcontainer");
           downloadcontainer.appendChild(link);
         }
+        function totals(lines) {
+          const dLines = lines
+            .filter((l) => l.codeEnregistrement === "D")
+            .reduce(
+              ({ montantDebit, montantCredit }, l) => ({
+                montantDebit: montantDebit + l.montantDebit * 1,
+                montantCredit: montantCredit + l.montantCredit * 1,
+              }),
+              { montantDebit: 0, montantCredit: 0 }
+            );
+          const fLine = lines.find((l) => l.codeEnregistrement === "F");
+          const jLine = lines.find((l) => l.codeEnregistrement === "J");
+          const tLine = lines.find((l) => l.codeEnregistrement === "T");
+          console.log("dLines", {
+            montantDebit: dLines.montantDebit,
+            montantCredit: dLines.montantCredit,
+          });
+          console.log("fLine", {
+            montantDebit: 1 * fLine.montantDebit,
+            montantCredit: 1 * fLine.montantCredit,
+          });
+          console.log("jLine", {
+            montantDebit: 1 * jLine.montantDebit,
+            montantCredit: 1 * jLine.montantCredit,
+          });
+          console.log("tLine", {
+            montantDebit: 1 * tLine.montantDebit,
+            montantCredit: 1 * tLine.montantCredit,
+          });
+          document.getElementById("montantCredit").innerText =
+            dLines.montantCredit +
+            (dLines.montantCredit === 1 * fLine.montantCredit &&
+            dLines.montantCredit === 1 * jLine.montantCredit &&
+            dLines.montantCredit === 1 * tLine.montantCredit
+              ? " ✅"
+              : " ❌Pas OK");
+          document.getElementById("montantDebit").innerText =
+            dLines.montantDebit +
+            (dLines.montantDebit === 1 * fLine.montantDebit &&
+            dLines.montantDebit === 1 * jLine.montantDebit &&
+            dLines.montantDebit === 1 * tLine.montantDebit
+              ? " ✅"
+              : " ❌Pas OK");
+        }
       })();
     </script>
     <div class="octo-container">
@@ -446,7 +521,7 @@
           ></path>
         </svg>
       </a>
-      <small style="color: #767676;">44</small>
+      <small style="color: #767676">45</small>
     </div>
   </body>
 </html>
