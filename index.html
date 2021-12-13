@@ -109,6 +109,10 @@
           code pac
         </label>
         <label class="label">
+          <input type="checkbox" id="lignesVides" name="lignesVides" checked />
+          supprimer les lignes vides
+        </label>
+        <label class="label">
           <input
             type="checkbox"
             id="characteresSpeciaux"
@@ -153,6 +157,9 @@
         function remplacerCharacteresSpeciaux(lines) {
           lines.forEach((l) => (l._ = l._.replace(/[^\x20-\xff]/g, " ")));
           return lines;
+        }
+        function supprimerLignesVides(lines) {
+          return lines.filter((l) => !/^\s*$/.test(l));
         }
         function forcerCodeJournal(lines) {
           lines.forEach(
@@ -264,7 +271,7 @@
             this._set(i, 25, 36);
           }
           get imputation() {
-            return this._get(37, 5);
+            return this._get(37, 54);
           }
           set imputation(i) {
             this._set(i, 37, 54);
@@ -357,12 +364,16 @@
         codeEnregistrement.addEventListener("change", handleFiles, false);
         const codePac = document.getElementById("codePac");
         codePac.addEventListener("change", handleFiles, false);
-        const characteresSpeciaux = document.getElementById(
-          "characteresSpeciaux"
-        );
-        characteresSpeciaux.addEventListener("change", handleFiles, false);
-        const codeJournal = document.getElementById("codeJournal");
-        codeJournal.addEventListener("change", handleFiles, false);
+
+        document
+          .getElementById("characteresSpeciaux")
+          .addEventListener("change", handleFiles, false);
+        document
+          .getElementById("codeJournal")
+          .addEventListener("change", handleFiles, false);
+        document
+          .getElementById("lignesVides")
+          .addEventListener("change", handleFiles, false);
         function errorMessage(message) {
           const content = document.getElementById("content");
           content.innerHTML = `<p class="alert">${message}</p>`;
@@ -382,9 +393,12 @@
                   if (codePac.checked) lines = modifierCodePac(lines);
                   if (codeEnregistrement.checked)
                     lines = suprimerCodeEnregistrementV(lines);
-                  if (characteresSpeciaux.checked)
+                  if (document.getElementById("characteresSpeciaux").checked)
                     lines = remplacerCharacteresSpeciaux(lines);
-                  if (codeJournal.checked) lines = forcerCodeJournal(lines);
+                  if (document.getElementById("codeJournal").checked)
+                    lines = forcerCodeJournal(lines);
+                  if (document.getElementById("lignesVides").checked)
+                    lines = supprimerLignesVides(lines);
                   toContent(lines);
                   totals(lines);
                   downloadText(
@@ -521,7 +535,7 @@
           ></path>
         </svg>
       </a>
-      <small style="color: #767676">45</small>
+      <small style="color: #767676">46</small>
     </div>
   </body>
 </html>
