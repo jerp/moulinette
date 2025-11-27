@@ -291,7 +291,7 @@ function createIframeDialog() {
   iframe.src = iframeSrc;
   iframe.title = "Moulinette IFrame";
   iframe.style.width = "100%";
-  iframe.style.height = "99.9%";
+  iframe.style.height = "calc(100% - 5px)";
   iframe.style.border = "none";
   dialog.appendChild(iframe);
   document.body.appendChild(dialog);
